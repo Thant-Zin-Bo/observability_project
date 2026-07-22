@@ -1,7 +1,6 @@
 variable "project_id" {
   description = "GCP project ID."
   type        = string
-  default     = "terraform-learn-498518"
 }
 
 variable "region" {
@@ -12,6 +11,11 @@ variable "region" {
 variable "zone" {
   description = "GCP zone."
   type        = string
+
+  validation {
+    condition     = can(regex("^[a-z]+-[a-z0-9]+[0-9]-[a-z]$", var.zone))
+    error_message = "Zone must look like europe-west1-b."
+  }
 }
 
 variable "environment" {
@@ -30,8 +34,6 @@ variable "machine_type" {
   type        = string
   default     = "e2-small"
 }
-
-
 
 variable "enable_public_api" {
   description = "Whether to expose the API port for controlled demo access."

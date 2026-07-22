@@ -1,4 +1,4 @@
-
+project_id        = "terraform-learn-498518"
 region            = "europe-west1"
 zone              = "europe-west1-b"
 environment       = "dev"
