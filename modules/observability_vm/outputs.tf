@@ -12,3 +12,7 @@ output "service_account_email" {
   description = "VM service account email."
   value       = google_service_account.vm.email
 }
+output "network_name" {
+  description = "Name of the VPC network created for the observability VM."
+  value       = google_compute_network.this.name
+}

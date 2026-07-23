@@ -10,18 +10,21 @@ locals {
 }
 
 resource "google_compute_network" "this" {
+  project                 = var.project_id
   name                    = "${local.name_prefix}-vpc"
   auto_create_subnetworks = false
 }
 
 resource "google_compute_subnetwork" "this" {
+  project       = var.project_id
   name          = "${local.name_prefix}-subnet"
   ip_cidr_range = "10.10.0.0/24"
   region        = var.region
   network       = google_compute_network.this.id
 }
 
-resource "google_compute_firewall" "iap_ssh" {
+resource "google_compute_firewall" "ssh_iap" {
+  project = var.project_id
   name    = "${local.name_prefix}-allow-iap-ssh"
   network = google_compute_network.this.name
 
@@ -36,6 +39,7 @@ resource "google_compute_firewall" "iap_ssh" {
 
 resource "google_compute_firewall" "api" {
   count   = var.enable_public_api ? 1 : 0
+  project = var.project_id
   name    = "${local.name_prefix}-allow-api"
   network = google_compute_network.this.name
 
@@ -49,17 +53,19 @@ resource "google_compute_firewall" "api" {
 }
 
 resource "google_service_account" "vm" {
+  project      = var.project_id
   account_id   = "${local.name_prefix}-vm-sa"
   display_name = "Observability VM service account"
 }
 
-resource "google_project_iam_member" "vm_logging_viewer" {
+resource "google_project_iam_member" "vm_logging_writer" {
   project = var.project_id
-  role    = "roles/logging.viewer"
+  role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.vm.email}"
 }
 
 resource "google_compute_instance" "this" {
+  project      = var.project_id
   name         = "${local.name_prefix}-vm"
   machine_type = var.machine_type
   zone         = var.zone
@@ -77,8 +83,6 @@ resource "google_compute_instance" "this" {
 
   network_interface {
     subnetwork = google_compute_subnetwork.this.id
-
-
   }
 
   service_account {
@@ -89,4 +93,8 @@ resource "google_compute_instance" "this" {
   metadata = {
     enable-oslogin = "TRUE"
   }
+
+  depends_on = [
+    google_project_iam_member.vm_logging_writer
+  ]
 }
