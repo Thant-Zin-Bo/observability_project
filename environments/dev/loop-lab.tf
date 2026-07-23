@@ -1,6 +1,6 @@
 locals {
   lab_firewall_rules = {
-    iap_ssh = {
+    iap-ssh = {
       port          = "22"
       source_ranges = ["35.235.240.0/20"]
       description   = "Loop lab: allow IAP SSH to the observability VM"
