@@ -1,7 +1,0 @@
-project_id        = "terraform-learn-498518"
-region            = "europe-west1"
-zone              = "europe-west1-b"
-environment       = "dev"
-owner             = "thant-zin-bo"
-machine_type      = "e2-small"
-enable_public_api = false
